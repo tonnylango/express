@@ -3,13 +3,14 @@
 /**
  * Module dependencies.
  */
-
-var express = require('../..');
 var hash = require('pbkdf2-password')()
 var path = require('path');
 var session = require('express-session');
+var express = require("express")
+var {getUser, comparePassword } = require('./users')
 
-var app = module.exports = express();
+const app = express();
+const mockUsers = getUser()
 
 // config
 
@@ -36,22 +37,6 @@ app.use(function(req, res, next){
   if (err) res.locals.message = '<p class="msg error">' + err + '</p>';
   if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
   next();
-});
-
-// dummy database
-
-var users = {
-  tj: { name: 'tj' }
-};
-
-// when you create a user, generate a salt
-// and hash the password ('foobar' is the pass here)
-
-hash({ password: 'foobar' }, function (err, pass, salt, hash) {
-  if (err) throw err;
-  // store the salt & hash in the "db"
-  users.tj.salt = salt;
-  users.tj.hash = hash;
 });
 
 

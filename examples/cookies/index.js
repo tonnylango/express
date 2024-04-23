@@ -22,14 +22,20 @@ app.use(cookieParser('my secret here'));
 app.use(express.urlencoded({ extended: false }))
 
 app.get('/', function(req, res){
-  if (req.cookies.remember) {
+  if (req.signedCookies.remember) {
     res.send('Remembered :). Click to <a href="/forget">forget</a>!.');
   } else {
-    res.send('<form method="post"><p>Check to <label>'
-      + '<input type="checkbox" name="remember"/> remember me</label> '
-      + '<input type="submit" value="Submit"/>.</p></form>');
-  }
-});
+    res.send(`
+      <form method="post">
+        <p>Check to 
+          <label>
+            <input type="checkbox" name="remember"/> remember me 
+          </label> '
+          <input type="submit" value="Submit"/>.
+        </p>
+      </form>`);
+    }
+  });
 
 app.get('/forget', function(req, res){
   res.clearCookie('remember');
@@ -38,7 +44,7 @@ app.get('/forget', function(req, res){
 
 app.post('/', function(req, res){
   var minute = 60000;
-  if (req.body.remember) res.cookie('remember', 1, { maxAge: minute });
+  if (req.body.remember) res.cookie('remember', 1, { maxAge: minute, signed: true });
   res.redirect('back');
 });
 
